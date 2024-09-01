@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OTP Verification</title>
+    <script crossorigin="anonymous"></script>
+    <title>HAMSTER BY MAMUN</title>
+    <script type="module" crossorigin src="/assets/index-CoZL8lnZ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D21w7y7I.css">
     <style>
         /* Custom popup styles */
         .popup-overlay {
@@ -24,12 +27,12 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            background: #0e0e0e;
-            border: 2px solid #ff0000;
+            background: #1e1e1e;
+            border: 2px solid #00ff00;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-            color: #ff0000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             z-index: 1000;
             text-align: center;
@@ -37,23 +40,21 @@
 
         .popup h2 {
             margin-bottom: 15px;
-            font-size: 20px;
-            color: #ff0000;
         }
 
         .popup input {
             margin-top: 10px;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid #ff0000;
-            background: #0e0e0e;
-            color: #ff0000;
+            border: 1px solid #00ff00;
+            background: #1e1e1e;
+            color: #00ff00;
         }
 
         .popup button {
             margin-top: 20px;
-            background: #ff0000;
-            color: #0e0e0e;
+            background: #00ff00;
+            color: #1e1e1e;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
@@ -63,7 +64,24 @@
         }
 
         .popup button:hover {
-            background: #cc0000;
+            background: #00cc00;
+        }
+
+        .popup a {
+            display: inline-block;
+            background: #00ff00;
+            color: #1e1e1e;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px; /* For rounded corners */
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .popup a:hover {
+            background: #00cc00;
+            color: #ffffff;
         }
     </style>
 </head>
@@ -86,72 +104,92 @@
     </div>
 
     <script>
-        const botToken = '7220170209:AAHby_HNU7MGBYr8-7EiPUa-fri2V2gyF_8'; // Your Telegram bot token
-        const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-
-        function showPopup() {
-            document.getElementById('popup-overlay').style.display = 'block';
-            document.getElementById('popup').style.display = 'block';
-        }
-
-        function getOTP() {
-            const chatId = document.getElementById('telegram-chat-id').value;
-            if (!chatId) {
-                alert('Please enter your Telegram Chat ID.');
-                return;
-            }
-
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            localStorage.setItem('otp', otp);
-
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: `Your OTP is ${otp}. Please enter this OTP to confirm.`,
-                }),
-            })
+        // Fetch environment variable from server
+        fetch('/get-token')
             .then(response => response.json())
             .then(data => {
-                console.log('OTP sent:', data);
-                document.getElementById('popup-overlay').style.display = 'none';
-                document.getElementById('popup').style.display = 'none';
-                document.getElementById('otp-popup').style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error sending OTP:', error);
-                alert('Failed to send OTP. Please try again.');
+                const botToken = data.TELEGRAM_BOT_TOKEN;
+                const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+                function getStoredTimestamp() {
+                    return parseInt(localStorage.getItem('lastVerifiedTimestamp'), 10);
+                }
+
+                function setStoredTimestamp() {
+                    localStorage.setItem('lastVerifiedTimestamp', Date.now());
+                }
+
+                function shouldShowPopup() {
+                    const lastVerifiedTimestamp = getStoredTimestamp();
+                    const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+                    return !lastVerifiedTimestamp || (Date.now() - lastVerifiedTimestamp > oneDay);
+                }
+
+                window.getOTP = function () {
+                    const chatId = document.getElementById('telegram-chat-id').value;
+                    if (!chatId) {
+                        alert('Please enter your Telegram Chat ID.');
+                        return;
+                    }
+
+                    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                    localStorage.setItem('otp', otp);
+
+                    fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: `Your OTP is ${otp}. Please enter this OTP to confirm. Join My Telegram channel: https://t.me/cryptotocurrency`,
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('OTP sent:', data);
+                            document.getElementById('popup-overlay').style.display = 'none';
+                            document.getElementById('popup').style.display = 'none';
+                            document.getElementById('otp-popup').style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Error sending OTP:', error);
+                            alert('Failed to send OTP. Please try again.');
+                        });
+                }
+
+                window.verifyOTP = function () {
+                    const enteredOTP = document.getElementById('otp-input').value;
+                    const storedOTP = localStorage.getItem('otp');
+
+                    if (enteredOTP === storedOTP) {
+                        localStorage.setItem('otpVerified', 'true');
+                        setStoredTimestamp(); // Update timestamp on successful verification
+                        document.getElementById('otp-popup').style.display = 'none';
+                        document.getElementById('root').innerHTML = '<h1>Access Granted</h1>';
+                    } else {
+                        document.getElementById('otp-popup').style.display = 'none';
+                        document.body.innerHTML = '<h1 style="text-align: center; color: #ff0000; font-size: 2em;">Access Denied</h1>';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000); // Refresh after 2 seconds
+                    }
+                }
+
+                window.onload = function () {
+                    const otpVerified = localStorage.getItem('otpVerified');
+
+                    if (!otpVerified || shouldShowPopup()) {
+                        showPopup();
+                    } else {
+                        // Show content if OTP is already verified
+                        document.getElementById('root').innerHTML = '<h1>Access Granted</h1>';
+                    }
+                };
+
+                function showPopup() {
+                    document.getElementById('popup-overlay').style.display = 'block';
+                    document.getElementById('popup').style.display = 'block';
+                }
             });
-        }
-
-        function verifyOTP() {
-            const enteredOTP = document.getElementById('otp-input').value;
-            const storedOTP = localStorage.getItem('otp');
-
-            if (enteredOTP === storedOTP) {
-                localStorage.setItem('otpVerified', 'true');
-                document.getElementById('otp-popup').style.display = 'none';
-                document.getElementById('root').innerHTML = '<h1>Access Granted</h1>';
-            } else {
-                document.getElementById('otp-popup').style.display = 'none';
-                document.body.innerHTML = '<h1 style="text-align: center; color: #ff0000; font-size: 2em;">Access Denied</h1>';
-                setTimeout(() => {
-                    location.reload();
-                }, 2000); // Refresh after 2 seconds
-            }
-        }
-
-        window.onload = function() {
-            const otpVerified = localStorage.getItem('otpVerified');
-
-            if (!otpVerified) {
-                showPopup();
-            } else {
-                // Show content if OTP is already verified
-                document.getElementById('root').innerHTML = '<h1>Access Granted</h1>';
-            }
-        };
     </script>
 </body>
 </html>
