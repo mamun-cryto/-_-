@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamster Combat Bot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>Hamster Combat Bot</h1>
+    
+    <!-- Player and Enemy Stats -->
+    <div class="stats">
+      <div class="player">
+        <h2>Player</h2>
+        <p>Health: <span id="player-health">100</span></p>
+      </div>
+      <div class="enemy">
+        <h2>Enemy</h2>
+        <p>Health: <span id="enemy-health">100</span></p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button onclick="attack()">Attack</button>
+      <button onclick="defend()">Defend</button>
+      <button onclick="heal()">Heal</button>
+      <button onclick="restart()">Restart</button>
+    </div>
+
+    <!-- Game Log -->
+    <div class="log" id="log"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
